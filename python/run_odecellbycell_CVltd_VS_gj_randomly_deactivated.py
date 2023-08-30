@@ -13,7 +13,7 @@ ny = 20
 
 subfolders = ["CVltd_C_"+segment+"_randomly_deactivated_gj_nx_"+str(nx)+"_ny_"+str(ny)+"_stim_cell_"+sim_cell for segment in segments]
 results_folder = "../results/ODECellByCellModel"
-program_name = "./main"
+program_name = "./bemi"
 
 dry_run = True
 
@@ -55,7 +55,7 @@ if not dry_run:
 def launch_sim(subfolder,subsubfolder,seg_opt,pstr,nstr):
     output_file_name = subfolder+"/"+subsubfolder+"/"+"n_"+nstr
 
-    options = ["-test 20 -ofreq 1e0 -rk mRKC -rfreq 5 -spec true"]
+    options = ["-ndom 6 -ofreq 1e0 -rfreq 5 -spec true"]
     options.append("-dt "+str(dt))
     options.append("-dG "+str(dG))
     options.append("-cw "+str(cw))

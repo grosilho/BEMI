@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     params.rho_freq = 10;        //estimation of the spectral radius every rho_freq steps
     
     params.output_file = "sol"; //output file name
-    params.output_freq = 1;    //-1 means no outputs, 0 just at the end, otherwise every output_freq steps
+    params.output_freq = 0;    //-1 means no outputs, 0 just at the end, otherwise every output_freq steps
     params.matlab_output = false; // generates the .m file or not
     params.bin_output = false;    //generates the .bin file or not
     params.specific_output = false;//calls a problem specific output function

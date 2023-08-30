@@ -6,7 +6,7 @@ import csv
 
 results_subfolder = "CVt_C_Rt"
 results_folder = "../results/ODECellByCellModel"
-program_name = "./main"
+program_name = "./bemi"
 
 dry_run = False
 
@@ -42,7 +42,7 @@ def estimation_runtime(dt,dG):
 def launch_sim(Rt,Rtstr,runtime=0):
     output_file_name = results_subfolder+"/"+"Rt_"+Rtstr
 
-    options = ["-test 20 -ofreq 1e0 -rk mRKC -rfreq 5 -spec true"]
+    options = ["-ndom 6 -ofreq 1e0 -rfreq 5 -spec true"]
     options.append("-dt "+str(dt))
     options.append("-dG "+str(dG))
     options.append("-cw "+str(cw))

@@ -28,7 +28,7 @@ Rt = 0.00145 # 10**16
 se = 20
 results_folder = "../results/ODECellByCellModel"
 
-program_name = "./main"
+program_name = "./bemi"
 file_name_base = results_subfolder
 
 
@@ -80,8 +80,8 @@ def launch_sim(dt,dG,dtstr,dGstr,runtime=0):
         runtime = math.ceil(estimation_runtime(dt,dG)) # in hours
     srun_command = "srun --time="+str(runtime)+":00:00"
 
-    run_command = [srun_command, program_name] + options + [output_redirection, "&"]  #
-    #run_command = [program_name] + options                                              #
+    # run_command = [srun_command, program_name] + options + [output_redirection, "&"]  #
+    run_command = [program_name] + options                                              #
 
     print(" ".join(run_command))
     os.system(" ".join(run_command))      

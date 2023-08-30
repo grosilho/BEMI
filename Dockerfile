@@ -9,14 +9,14 @@ RUN cd gmsh && mkdir build && cd build && \
     cmake -DENABLE_BUILD_DYNAMIC=1 .. && make && make install
 RUN cd fftw-3.3.10 && mkdir build && cd build && cmake -S .. -B . && \
     make && make install 
-WORKDIR /bem_emi
+WORKDIR /bemi
 RUN rm -rf /Libraries
-COPY include /bem_emi/include
-COPY src /bem_emi/src
-COPY cmake /bem_emi/cmake
-COPY results /bem_emi/results
-COPY CMakeLists.txt /bem_emi/CMakeLists.txt
+COPY include /bemi/include
+COPY src /bemi/src
+COPY cmake /bemi/cmake
+COPY CMakeLists.txt /bemi/CMakeLists.txt
+RUN mkdir results
 RUN mkdir build && cd build && cmake -S .. -B . && make
-WORKDIR /bem_emi/build
-USER root
+WORKDIR /bemi/build
+ENTRYPOINT ["/bemi/build/bemi"]
 

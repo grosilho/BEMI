@@ -6,7 +6,7 @@ ny = 1
 
 results_subfolder = "CVtld_C_nx_"+str(nx)+"_ny_"+str(ny)
 results_folder = "../results/ODECellByCellModel"
-program_name = "./main"
+program_name = "./bemi"
 
 dry_run = False
 
@@ -33,7 +33,7 @@ if not dry_run:
 def launch_sim(segment_key,segment_opt):
     output_file_name = results_subfolder+"/"+segment_key
 
-    options = ["-test 20 -ofreq 1e0 -rk mRKC -rfreq 5 -spec true"]
+    options = ["-ndom 6 -ofreq 1e0 -rfreq 5 -spec true"]
     options.append("-dt "+str(dt))
     options.append("-dG "+str(dG))
     options.append("-cw "+str(cw))

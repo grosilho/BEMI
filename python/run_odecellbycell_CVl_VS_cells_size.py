@@ -6,7 +6,7 @@ import csv
 
 results_subfolder1 = "CVl_VS_cells_size"
 results_folder = "../results/ODECellByCellModel"
-program_name = "./main"
+program_name = "./bemi"
 
 dry_run = False
 
@@ -62,7 +62,7 @@ if not dry_run:
 def launch_sim(str1,str2,cl,cw,Imax,runtime=0):
     output_file_name = results_subfolder1+"/"+str1+"/"+str1+"_"+str2
 
-    options = ["-test 20 -ofreq 1e0 -rk mRKC -rfreq 5 -spec true"]
+    options = ["-ndom 6 -ofreq 1e0 -rfreq 5 -spec true"]
     options.append("-dt "+str(dt))
     options.append("-dG "+str(dG))
     options.append("-cw "+str(cw))

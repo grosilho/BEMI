@@ -63,7 +63,7 @@ bool Parameters::read_command_line(int argc, char** argv)
     
     matlab_output = cl.follow(matlab_output,3,"-matlab_output","-matlab_out","-matlab");
     bin_output = cl.follow(bin_output,3,"-bin_output","-bin_out","-bin");
-    specific_output = cl.follow(specific_output,3,"-spec_output","-spec_out","-spec");
+    specific_output = cl.follow(specific_output,4,"-spec_output","-spec_out","-spec","-vtk");
     
     dt = cl.follow(dt,3, "-dt", "-tau","-h");
     rho_freq = cl.follow(rho_freq,3, "-rhofreq", "-rho_freq", "-rfreq");
@@ -117,43 +117,82 @@ bool Parameters::read_command_line(int argc, char** argv)
         rho_freq = 1;
     }
     
-//    if(cl.search("--help"))
-//    {
-//        cout<<"This is a code for running ODE and SDE simulations. A list of problems\n"
-//            <<"is hardcoded in the executable. Look into OdeList.h and SdeList.h.\n"
-//            <<"Each problem has a number n depending on the order of apparition in the list."<<endl;
-//        cout<<"The following options are available:\n"
-//            <<"    -sde       : run an SDE simulation.\n"
-//            <<"    -ode       : run an ODE simulation.\n"
-//            <<"    -oec       : sets the ODE error controller. Values are 1,2,3 for\n"
-//            <<"                 I=Integral, PI=Proportional I, PPI= Predictive PI controllers\n"
-//            <<"                 respectively. Default is 3.\n"
-//            <<"    -cee c     : if c=1 the integrator computes the exact local error (with a lot of Eulers steps).\n"
-//            <<"    -ewd e     : if e=1 then the error controller writes data it collects into disk at each step.\n"
-//            <<"    -ntest n   : chooses the problem. It takes the nth problem\n"
-//            <<"                 from list SdeList.h or from OdeList.h.\n"
-//            <<"    -dt h      : time step when running in fixed time step mode or initial time\n"
-//            <<"                 step when running in adaptive time step mode.\n"
-//            <<"    -dtadap dta: if dta=1 enables time step adaptivity, else in fixed time step mode.\n"
-//            <<"    -contW W   : if W=1 uses a continuous brownian motion, if W=0 a discrete one.\n"
-//            <<"    -atol at   : sets the absolute tolerance, by default at=1e-2.\n"
-//            <<"    -rtol rt   : sets the relative tolerance. If not provided then rtol=atol.\n"
-//            <<"    -ofile ofi : name of output file. By default ofi=solution.\n"
-//            <<"    -iter it   : Number of Monte Carlo simulations.\n"
-//            <<"    -ofreq ofr : frequency of write to disk. If ofr=0 writes at end of simulation\n"
-//            <<"                 only. If ofr=-1 never writes solution. If it>1 we set ofr=-1.\n"
-//            <<"    -verb v    : enables or disables verbosity. If it>1 then v=0.\n"
-//            <<"    -seed s    : sets the seed for random numbers. By default is -1, which is a random seed.\n"
-//            <<"    -solver rk : name of RungeKutta solver to use. The available solvers are:\n"
-//            <<"                 -RKC2     Runge-Kutta-Chebychev order 2,\n"
-//            <<"                 -ROCK2    Runge-Kutta-Orthogonal-Chebychev order 2,\n"
-//            <<"                 -DROCK2   ROCK2 with increased damping,\n"
-//            <<"                 -SROCK2   Stochastic Weak Order 2 ROCK2,\n"
-//            <<"                 -MT       Weak order 2 Milstein-Talay.\n"<<endl;
-//        cout<<"Error estimators are available for ROCK2 and SROCK2. Not implemented in DROCK2 and MT."<<endl;
-//        cout<<"Files are written into folders with same name of the tests."<<endl;
-//        return false;
-//    }
+    if(cl.search("--help"))
+    {
+        cout<<"This is the BEMI code for solving the EMI model with the boundary element method (BEM)\n"
+            <<"Different geometries (cells arrangements) are hardcoded in the executable. Look into src/emi_model/MultiDomain.cpp.\n"
+            <<"Run the code from the ./build folder as ./bemi OPTIONS, where OPTIONS is a combination of the below.\n"
+              "Results are stored in the ./results folder.\n"<<endl;
+        cout<<"The following options are available:\n"
+            <<"--- General options:\n"           
+            <<"    -ofile      : name of output file. Default: sol.\n"
+            <<"    -refsol     : name of the reference solution (if available). Default: \"\"\n"
+            <<"                  If available, errors are computed at the end of the simulation.\n"
+            <<"    -ofreq      : Output frequency. Default: -1\n"
+            <<"                  - If 0 writes solution only at the end of simulation.\n"
+            <<"                    In general, used to generate a reference solution.\n"
+            <<"                  - If >0 writes solution every ofreq time steps,\n"
+            <<"                  - If -1 never writes the solution.\n"
+            <<"                    In general, used to generate a solution and just compare it against a reference solution.\n"
+            <<"    -bin        : Writes solution in binary format. Default: false.\n"
+            <<"    -vtk        : Writes solution in vtk format. Default: false.\n"
+            <<"--- Time integration options:\n"
+            <<"    -tend       : Final time. Default: 1.\n"
+            <<"    -dt         : Time step size. Default: 1e-2.\n"
+            <<"                  When running with an adaptive step size, this is the initial step size.\n"
+            <<"    -rfreq      : Frequency at which the spectral radii are re-estimated. Default: 10\n"
+            <<"    -verb       : Enables or disables verbosity. Default: true.\n"
+            <<"    -dtadap     : Enables/disables time step adaptivity. Default: false.\n"
+            <<"    -atol       : sets the absolute tolerance for error control. Default: 1e-2.\n"
+            <<"    -rtol       : sets the relative tolerance. Default: rtol=atol.\n"
+            <<"    -oec        : sets the error controller. Values are 1,2,3 for\n"
+            <<"                  I=Integral, PI=Proportional I, PPI= Predictive PI controllers\n"
+            <<"                  respectively. Default: 3.\n"
+            <<"    -convtest   : If true, performs a time convergence test instead, i.e. runs several simulations and checks errors. Default: false\n"
+            <<"                  If not provided, a reference solution is computed on the fly.\n"
+            <<"    -maxpow     : Minimal step size used for the convergence test is dt=tend/2^maxpow. Default: 6\n"
+            <<"    -minpow     : Maximal step size used for the convergence test is dt=tend/2^minpow. Default: 3\n"
+            <<"--- EMI model options:\n"
+            <<"    -ndom       : choose the geometry. A number from 0 to 7. Default: 6.\n"
+            <<"                 - 0: Two non touching inner domains, smoothed half circles. Outer domain is a circle.\n"
+            <<"                 - 1: Two non touching inner domains, half circles. Outer domain is a circle.\n"
+            <<"                 - 2: Two touching inner domains, half circles. Outer domain is a circle.\n"
+            <<"                 - 3: One inner domain, a circle. Outer domain is a circle.\n"
+            <<"                 - 4: A spiral of cells. Outer domain is a square.\n"
+            <<"                 - 5: A cluster of ten cells. Outer domain is an ellipse.\n"
+            <<"                 - 6: A rectangular cluster of cells. Number of cells, size, shape, etc are specified via command line. See below.\n"
+            <<"                 - 7: The microcard logo\n"        
+            <<"    -dG         : Target mesh size. Default: 1e-3.\n"
+            <<"    -Rl         : Gap junctions resistivity. Default: 0.00145.\n"
+            <<"    -si         : Inner cells electric conductivity.  Default: 3.\n"
+            <<"    -se         : Outer domain electric conductivity.  Default: 20.\n"
+            <<"    -Imax       : Stimulus intensity (applied for 1ms).  Default: 120.\n"
+            <<"--- Additional options only valid for ndom=6:\n"
+            <<"    -cl         : cells length. Default: 1e-2.\n"
+            <<"    -cw         : cells width.  Default: 0.2e-2.\n"
+            <<"    -Rl         : Longitudinal gap junctions resistivity. Default: 0.00145.\n"
+            <<"    -Rt         : Transversal gap junctions resistivity. Default: 0.00145.\n"
+            <<"    -nx         : Number of cells in horizontal direction.  Default: 10\n"
+            <<"    -ny         : Number of cells in vertical direction.  Default: 2\n"
+            <<"    -va         : Amplitude of vertical gap junctions waves.  Default: 5e-5.\n"
+            <<"    -vf         : Frequency of vertical gap junctions waves.  Default: 0 (a segment).\n"
+            <<"    -vs         : Smoothness of vertical gap junctions: waves or squared waves.  Default: true (wave).\n"
+            <<"    -ha         : Amplitude of horizontal permeble curves (PC).  Default: 0.\n"
+            <<"    -hl         : Length of horizontal PC.  Default: 20e-4.\n"
+            <<"    -hs         : Smoothness of horizontal PC: waves or squared waves.  Default: true (wave).\n"
+            <<"    -op         : Enables/disables the only perpendicular PC permeability. Default: false.\n"
+            <<"    -hp         : Relative position of horizontal PC. Default: 0.5 (centered).\n"
+            <<"    -halt       : Alternation of horizontal PC. Default: -1.\n"
+            <<"                  - -1: No alternation, no PC. The whole horizontal gap junction is a fully permeable segment.\n"
+            <<"                  -  0: No alternation. The PCs are placed one above the other.\n"
+            <<"                  -  1: Alternation. The PCs are placed at relative positions hp and 1-hp.\n"
+            <<"                  -  2: Random. The PCs are randomly placed on the horizontal gap junction.\n"
+            <<"    -hprob      : Probability at which the horizontal PC becomes impermeable. Default: 0\n"
+            <<"    -nic        : When ny=2, stimulates 1 or 2 of the leftmost cells. Default: 1\n"
+            <<endl;
+        
+        return false;
+    }
     
     return true;
 }

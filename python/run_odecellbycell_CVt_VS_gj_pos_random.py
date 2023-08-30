@@ -8,7 +8,7 @@ segments = ["flat", "wave", "squaredwave", "squaredwave_op"]
 
 subfolders = ["CVt_C_"+segment+"_random_gj" for segment in segments]
 results_folder = "../results/ODECellByCellModel"
-program_name = "./main"
+program_name = "./bemi"
 
 dry_run = False
 
@@ -50,7 +50,7 @@ if not dry_run:
 def launch_sim(subfolder,seg_opt,nstr):
     output_file_name = subfolder+"/"+"n_"+nstr
 
-    options = ["-test 20 -ofreq 1e0 -rk mRKC -rfreq 5 -spec true"]
+    options = ["-ndom 6 -ofreq 1e0 -rfreq 5 -spec true"]
     options.append("-dt "+str(dt))
     options.append("-dG "+str(dG))
     options.append("-cw "+str(cw))

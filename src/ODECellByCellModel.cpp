@@ -2,9 +2,7 @@
 
 ODECellByCellModel::ODECellByCellModel(const int n, Parameters& param_)
 :cbc(n,param_)
-{
-    cout<<"In ODECellByCellModel()"<<endl;
-    
+{    
 //    im = make_unique<uBidomain::AlievPanfilov>();
     im = make_unique<uBidomain::MyoKit::MyoKitIonicModel>(param_);
     
@@ -35,8 +33,6 @@ ODECellByCellModel::ODECellByCellModel(const int n, Parameters& param_)
         global_stim_vec += cbc.local_to_global_left(Vector::Ones(stim_dom_size),stim_dom,false);
     }
     stim_vec = cbc.global_to_local_left(global_stim_vec,0,false);
-    
-    cout<<"End of ODECellByCellModel()"<<endl;
 }
 
 ODECellByCellModel::~ODECellByCellModel()

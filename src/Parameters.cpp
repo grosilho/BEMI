@@ -136,6 +136,7 @@ bool Parameters::read_command_line(int argc, char** argv)
             <<"                    In general, used to generate a solution and just compare it against a reference solution.\n"
             <<"    -bin        : Writes solution in binary format. Default: false.\n"
             <<"    -vtk        : Writes solution in vtk format. Default: false.\n"
+            <<"    -matlab     : Writes solution in matlab format. Default: false.\n"
             <<"--- Time integration options:\n"
             <<"    -tend       : Final time. Default: 1.\n"
             <<"    -dt         : Time step size. Default: 1e-2.\n"

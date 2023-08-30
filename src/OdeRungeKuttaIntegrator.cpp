@@ -200,7 +200,7 @@ bool  OdeRungeKuttaIntegrator::integrate()
         output_final_solution(yn);
     
     if(last && param->refsol_path.compare(string(""))!=0)
-        compute_errors();
+        compute_errors(yn);
     
     return last;
 }     

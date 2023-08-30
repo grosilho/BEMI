@@ -1,11 +1,5 @@
 # BEMI
-BEMI is a C++ implementation of a boundary element method (BEM) for solving the extracellular-membrane-intracellular (EMI) model in two dimensions. This code has been used for the numerical experiments presented in:
-
-- Rosilho de Souza, G., Pezzuto, S., & Krause, R. (2023). _Boundary Integral Formulation of the Cell-by-Cell Model of Cardiac Electrophysiology_. Submitted to Engineering Analysis with Boundary Elements, [arXiv: 2302.05281](https://arxiv.org/abs/2302.05281).  
-- Rosilho de Souza, G., Pezzuto, S., & Krause, R. (2023). _Effect of Gap Junction Distribution, Size, and Shape on the Conduction Velocity in a Cell-by-Cell Model for Electrophysiology_. Functional Imaging and Modeling of the Heart, 117–126, <https://doi.org/10.1007/978-3-031-35302-4_12>.
-
-
-## Mathematical formulation
+BEMI is a C++ implementation of a boundary element method (BEM) for solving the extracellular-membrane-intracellular (EMI) model in two dimensions. 
 
 ### The EMI model
 The EMI model (a.k.a the Cell-by-Cell model) for cardiac electrophysiology is a system of reaction-diffusion equations describing the evolution of the electric potential within each cell. The model has a time derivative only on the transmembrane boundary and has algebraic conditions elsewhere, i.e. it reduces to a differential algebraic equation. 
@@ -13,9 +7,18 @@ The EMI model (a.k.a the Cell-by-Cell model) for cardiac electrophysiology is a 
 ### The BEM method
 Employing a boundary integral formulation we recast the EMI model to an ordinary differential equation living only on the transmembrane boundary. Thanks to the boundary element method only the transmembrane boundary is discretized (not the cellular or extra-cellular domains) and therefore the number of degrees of freedom is drastically reduced.
 
+### Time integration
+For the time integration, we employed the [mRKC](https://www.ams.org/journals/mcom/2022-91-338/S0025-5718-2022-03753-4/)[^mRKC] method and employed the already available [code](https://github.com/grosilho/mRKC).
+
+### References
+This code has been used for the numerical experiments presented in:
+
+- Rosilho de Souza, G., Pezzuto, S., & Krause, R. (2023). _Boundary Integral Formulation of the Cell-by-Cell Model of Cardiac Electrophysiology_. Submitted to Engineering Analysis with Boundary Elements, [arXiv: 2302.05281](https://arxiv.org/abs/2302.05281).  
+- Rosilho de Souza, G., Pezzuto, S., & Krause, R. (2023). _Effect of Gap Junction Distribution, Size, and Shape on the Conduction Velocity in a Cell-by-Cell Model for Electrophysiology_. Functional Imaging and Modeling of the Heart, 117–126, <https://doi.org/10.1007/978-3-031-35302-4_12>.
+
 
 ## Install and Run
-The easiest way to run the code is by creating a Docker image with the Dockerfile provided here and run the code within a container. Otherwise, one could install the dependencies and compile the code.
+The easiest way to run the code is by creating a Docker image from the Dockerfile provided here and running the code within a container. Otherwise, one could install the dependencies and compile the code as usual.
 
 ### Docker
 To create the Docker image, from the root directory of the repository, run:
@@ -24,17 +27,19 @@ To create the Docker image, from the root directory of the repository, run:
 For running the code, execute:
 > docker run --rm -ti -v "$(pwd)/results":/bemi/results bemi ARGS_LIST
 
+For the `ARGS_LIST`, see below.
 
 ### Compile
 Before compiling the code install the dependencies: [eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), [gmsh](https://gmsh.info/), and [fftw3](https://www.fftw.org/). Then, compile[^comp_err] the code running:
 > mkdir build && cd build && cmake -S .. -B . && make
 
-And run the code from the ``ARGS_LIST `` directory as
-> ./bemi OPTIONS
+Run the code from the ``build`` directory as
+> ./bemi ARGS_LIST
 
+For the `ARGS_LIST`, see the next section.
 
 ## Command line arguments
-For the full list of arguments use the `--help` option or check out the `ARGS_LIST.md` file, here we just provide an example.
+For the full list of arguments use the `--help` option or check out the [`ARGS_LIST.md`](ARGS_LIST.md) file, here we just provide an example.
 
 To run a simulation
 
@@ -46,7 +51,7 @@ To run a simulation
 - both leftmost cells are stimulated: `-nic 2`,
 - with vertical gap junctions having a wave shape with amplitude $1\mu m=1e\text{-}4 cm$, frequency $2$ and being smooth: `-va 1e-4 -vf 2 -vs true`,
 - with horizontal gap junctions having a wave shape with amplitude $2\mu m=2e\text{-}4 cm$, length $30\mu m=0.003 cm$ and being squared: `-ha 2e-4 -hl 3e-3 -hs false`,
-- with horizontal gap junctions randomly placed along the horizontal cell side and their permeability being zero with probability 30% : `-halt 2 -hprob 0.3`
+- with horizontal gap junctions randomly placed along the horizontal cell side and their permeability being zero with probability 30% : `-halt 2 -hprob 0.3`,
 
 execute:
 
@@ -55,6 +60,8 @@ execute:
 -cw 2e-3 -nic 2 -va 1e-4 -vf 2 -vs true -ha 2e-4 -hl 3e-3 -hs false -halt 2 
 -hprob 0.3
 ```
+
+The output is stored in the `results` folder.
 
 # Acknowledgements
 
@@ -69,5 +76,6 @@ We are also thankful to Michael Multerer for sharing a starting BEM code.
 </p>
 
 
+[^mRKC]: Abdulle, A., Grote, M. J., & Rosilho de Souza, G. (2022). _Explicit stabilized multirate method for stiff differential equations_. Mathematics of Computation, 91(338), 2681–2714.
 [^comp_err]: If ``cmake`` doesn't  find the ``fftw3`` library, we suggest to compile ``fftw3`` using ``cmake`` (instead of the traditional ``./configure``). Check out the `Dockerfile` to see the commands that we used. 
 

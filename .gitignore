@@ -33,7 +33,7 @@
 
 # Folders
 build
-results
+results/*
 .vscode
 
 # Files

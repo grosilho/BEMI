@@ -1,22 +1,10 @@
 cmake_minimum_required(VERSION 3.17...3.24)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
-if(APPLE)
-	message(STATUS "Platform: MacOSX")
-	set(Eigen3_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/eigen-3.4.0-MacOSX")
-	set(Gmsh_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/gmsh-4.10.5-MacOSX")
-	set(FFTW3_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/fftw-3.3.10-MacOSX")
-else()
-	message(STATUS "Platform: Linux")
-#	set(Eigen3_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/eigen-3.4.0")
-#	set(Gmsh_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/gmsh-4.10.5")
-#	set(FFTW3_ROOT "${CMAKE_SOURCE_DIR}/../../Libraries/fftw-3.3.10")
-#        set(FFTW3_DIR "${CMAKE_SOURCE_DIR}/cmake")
-endif()
 
-project(MultirateIntegrators
+project(BEMI
         VERSION 1.0 
-        DESCRIPTION "Implementatiion of explicit stabilized multirate integrators adn other more classical methods." 
+        DESCRIPTION "Implementatiion of BEM method for EMI model." 
         LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
